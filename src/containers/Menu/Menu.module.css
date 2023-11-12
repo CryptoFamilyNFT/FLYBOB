@@ -67,5 +67,19 @@
     align-items: center;
     flex-grow: 1;
     border-top: 10px solid yellow;
+    height: 400;
+  }
+}
+
+@media screen and (max-height: 768px) {
+  .Menu {
+    box-sizing: border-box;
+    padding: 8px 8px 8px 0;
+    display: flex;
+    flex-flow: column;
+    justify-content: space-between;
+    align-items: center;
+    flex-grow: 1;
+    border-top: 10px solid yellow;
   }
 }

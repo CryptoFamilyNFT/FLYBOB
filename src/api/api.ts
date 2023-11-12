@@ -12,7 +12,7 @@ export default class Api {
   public static async getScores(): Promise<Score[]> {
     try {
       const response = await axios.get(`${Api.BASE_URL}/scores`);
-
+      console.log("response", response)
       await Promise.all([response])
 
       return response.data;

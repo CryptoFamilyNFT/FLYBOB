@@ -42,7 +42,7 @@ const TopBoard = () => {
     return (
         <div>
             <div style={{ backgroundColor: 'transparent', marginTop: 40, border: '2px solid transparent', borderBottom: 'none'}}>
-                <img src={LOGO} alt="" style={{ border: '2px solid transparent', borderRadius: '50%' }} />
+                <img src={LOGO} alt="" style={{ border: '2px solid transparent', borderRadius: '50%', width: 200, height: 200 }} />
                 <Typography style={{ color: 'yellow', fontFamily: "Josefin Sans, sand-serif", fontWeight: 'bold', fontSize: '40px', marginTop: 50, textShadow: '0 0 20px black' }}> BOB ADVENTURES 2</Typography>
             </div>
         </div>
