@@ -115,12 +115,12 @@ const Scene = () => {
     let prev_score = await Api.getScoreByUser(player) ?? 0;
     let isExist = await getPlayer()
     const playerScore = prev_score.find(n => n.player === context.addressSigner);
-    console.log(playerScore.score)
+    console.log(playerScore.score, finalScore)
     if (scoreToVerify >= Number(playerScore.score)) {
       const update = await Api.updatePlayer(player, scoreToVerify.toString())
       console.log('updated score: ', update)
     }
-    if (scoreToVerify === 0 && isExist === false) {
+    if (scoreToVerify === 0 || isExist === false) {
       const add = await Api.addScore(player, scoreToVerify.toString())
       console.log('updated score: ', scoreToVerify)
     } else {
