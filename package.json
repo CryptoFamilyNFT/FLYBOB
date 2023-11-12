@@ -2,7 +2,7 @@
   "name": "flappy-bird",
   "version": "1.1.4",
   "license": "MIT",
-  "author": "Artem Gusev (corocoto) <corocoto.art@gmail.com>",
+  "author": "Ethercode",
   "keywords": [
     "JavaScript",
     "React",
@@ -12,12 +12,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/corocoto/FlappyBird.git"
+    "url": "git+https://github.com/CryptoFamilyNFT/FLYBOB.git"
   },
   "bugs": {
     "url": "https://github.com/corocoto/FlappyBird/issues"
   },
-  "homepage": "https://corocoto.github.io/flappy-bird",
+  "homepage": "https://flybob.netlify.app/",
   "private": true,
   "scripts": {
     "start": "node scripts/start.js",

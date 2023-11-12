@@ -1,0 +1,1 @@
+{"version":3,"sources":["webpack://./src/containers/Menu/About/About.module.css"],"names":[],"mappings":"AAAA,oBACE,6BACF,CAEA,sBACE,yBAA0B,CAC1B,eACF","file":"AboutComponent.5953bbe5.chunk.css","sourcesContent":[".About {\n  color: var(--dark-brown-color);\n}\n\n.About a {\n  color: var(--yellow-color);\n  font-weight: 700;\n}\n"]}
