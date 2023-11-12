@@ -112,22 +112,30 @@ const Scene = () => {
   }
 
   const CheckScorePlayer = async (scoreToVerify: number, player: string) => {
-    let prev_score = await Api.getScoreByUser(player) ?? 0;
-    let isExist = await getPlayer()
-    const playerScore = prev_score.find(n => n.player === context.addressSigner);
-    console.log(playerScore.score, finalScore)
-    if (scoreToVerify >= Number(playerScore.score)) {
-      const update = await Api.updatePlayer(player, scoreToVerify.toString())
-      console.log('updated score: ', update)
+    try {
+      // Ottenere il punteggio attuale del giocatore
+      const prevScores = await Api.getScoreByUser(player);
+      
+      // Se il giocatore ha già un punteggio
+      if (prevScores && prevScores.length > 0) {
+        const playerScore = prevScores.find((n) => n.player === player);
+  
+        if (scoreToVerify >= Number(playerScore?.score)) {
+          // Aggiornare il punteggio solo se il nuovo punteggio è maggiore o uguale al punteggio attuale
+          await Api.updatePlayer(player, scoreToVerify.toString());
+          console.log('Updated score:', scoreToVerify);
+        }
+      } else {
+        // Se il giocatore non ha ancora un punteggio, aggiungere il nuovo punteggio
+        await Api.addScore(player, scoreToVerify.toString());
+        console.log('Added score:', scoreToVerify);
+      }
+    } catch (error) {
+      console.log('Error checking/updating score:', error);
+      // Gestisci gli errori in base alle tue esigenze
     }
-    if (scoreToVerify === 0 || isExist === false) {
-      const add = await Api.addScore(player, scoreToVerify.toString())
-      console.log('updated score: ', scoreToVerify)
-    } else {
-      console.log('not updated score')
-    }
-
-  }
+  };
+  
 
 
   const loadSceneImages = async () => {
