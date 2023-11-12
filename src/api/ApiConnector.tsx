@@ -2,7 +2,7 @@
 
 import axios, { AxiosResponse } from 'axios';
 
-const API_URL = 'https://bobdb.onrender.com'; // Sostituisci con l'URL del tuo server Express
+const API_URL = 'https://bobdb.onrender.com/api'; // Sostituisci con l'URL del tuo server Express
 
 interface Player {
   name: string;

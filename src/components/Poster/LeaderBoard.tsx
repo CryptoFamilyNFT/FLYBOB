@@ -49,6 +49,7 @@ const LeaderBoard = () => {
 
         // Prendi solo i primi 10 punteggi
         const top10 = sortedScores.slice(0, 10);
+        console.log(top10)
         setTop10Scores(top10);
       } catch (e) {
         console.log(e);
