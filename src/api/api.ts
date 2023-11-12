@@ -7,7 +7,7 @@ interface Score {
 
 export default class Api {
 
-  public static BASE_URL = 'http://localhost:5000/api';
+  public static BASE_URL = 'https://bobdb.onrender.com/api';
 
   public static async getScores(): Promise<Score[]> {
     try {
