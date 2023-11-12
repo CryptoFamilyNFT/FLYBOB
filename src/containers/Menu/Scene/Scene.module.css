@@ -1,8 +1,44 @@
 .Scene {
-  border: 6px solid var(--yellow-color);
+  border: 6px solid aqua;
   border-radius: 4px;
   height: 60vh;
 }
+
+.Modal {
+  height: 100%;
+  width: 100%;
+  background-color: rgba(0,0,0, 0.8);
+  display: flex;
+  justify-content: center;
+  color: white
+}
+
+.modal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0,0,0, 0.8);
+  border: none;
+  height: 100%;
+    width: 100%;
+}
+
+.paper {
+  background-color: rgba(0,0,0, 0.0);
+  padding: 20px; /* Cambiato da theme.spacing(2, 4, 3) */
+  text-align: center;
+  border: 2px solid transparent;
+}
+
+.gameOverImage {
+  max-width: 100%;
+  height: auto;
+}
+
+.gameOverButton {
+  margin-top: 20px; /* Cambiato da theme.spacing(2) */
+}
+
 
 @media screen and (min-height: 667px) {
   .Scene {
@@ -13,5 +49,16 @@
 @media (min-height: 731px) {
   .Scene {
     height: fit-content;
+  }
+
+  .Modal {
+    height: 100%;
+    width: 100%;
+  }
+
+  .GameOver {
+    height: 100%;
+    width: 100%;
+    justify-content: center;
   }
 }

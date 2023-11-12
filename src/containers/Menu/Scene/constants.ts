@@ -8,7 +8,7 @@ import FlySound from "../../../assets/sounds/fly.mp3";
 import ScoreSound from "../../../assets/sounds/score.mp3";
 import {createAudio, createImage} from "../../../helpers";
 
-export const GAP_VALUE = 80;
+export const GAP_VALUE = 90;
 export const GRAVITATION_VALUE = 1.7;
 
 export const CANVAS = {
@@ -60,7 +60,7 @@ export const sounds = new Map([
 ]);
 
 export const SCORE_TEXT = {
-  fill: '#000',
-  font: '16px Century Gothic',
-  text: (score: number) => `Score: ${score}`
+  fill: '#00FFFF',
+  font: '32px Josefin Sans, sans-serif',
+  text: (score: number) => `${score}`
 }

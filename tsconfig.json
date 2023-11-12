@@ -23,6 +23,7 @@
   },
   "include": [
     "src",
-    "index.d.ts"
+    "index.d.ts",
+    "config-overrides.js"
   ],
 }

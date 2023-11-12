@@ -6,6 +6,18 @@
   justify-content: space-between;
   align-items: center;
   flex-grow: 1;
+  min-height: 400;
+}
+
+.MenuMenu {
+  box-sizing: border-box;
+  padding: 8px 8px 8px 0;
+  display: flex;
+  flex-flow: column;
+  justify-content: space-between;
+  align-items: center;
+  flex-grow: 1;
+  min-height: 400;
 }
 
 .Menu > button[hidden] {
@@ -15,7 +27,7 @@
 .Menu > button {
   margin-left: auto;
   display: block;
-  background-color: var(--yellow-color);
+  background-color: aqua;
   font-size: 18px;
   border: none;
   border-radius: 4px;
@@ -43,4 +55,17 @@
 
 .Repo {
   background-image: url('icons/octocat.svg');
+}
+
+@media (min-height: 731px) {
+  .Menu {
+    box-sizing: border-box;
+    padding: 8px 8px 8px 0;
+    display: flex;
+    flex-flow: column;
+    justify-content: space-between;
+    align-items: center;
+    flex-grow: 1;
+    border-top: 10px solid yellow;
+  }
 }

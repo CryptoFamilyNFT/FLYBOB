@@ -1,4 +1,5 @@
-.App {
+.App-blurred {
+  position: relative;
   text-align: center;
   width: 100vw;
   height: 100vh;
@@ -7,8 +8,28 @@
   overflow: hidden;
 }
 
+/* Stile dello sfondo sfocato */
+.App-blurred::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("./assets/images/logo.jpeg");
+  filter: blur(8px); /* Puoi regolare l'intensità della sfocatura qui */
+  z-index: -1; /* Posiziona lo sfondo sfocato dietro il contenuto */
+}
+
+/* Stile per il contenuto dell'app */
+.App-content {
+  z-index: 1; /* Posiziona il contenuto sopra lo sfondo sfocato */
+  backdrop-filter: blur(8px); /* Puoi regolare l'intensità della sfocatura qui */
+  background-color: rgba(255, 255, 255, 0.5); /* Fai in modo che l'effetto di sfocatura sia più evidente */
+}
+
 @media screen and (min-width: 768px) {
-  .App {
+  .App-blurred {
     flex-flow: row;
   }
 }

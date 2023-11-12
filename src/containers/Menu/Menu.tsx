@@ -1,8 +1,8 @@
 // Libs
 import React, {Suspense} from 'react';
 import {Route, Switch, withRouter} from 'react-router-dom';
-
-// Styles
+import TwitterIcon from '@mui/icons-material/Twitter';
+import PublicIcon from '@mui/icons-material/Public';
 import styles from './Menu.module.css';
 
 // Components
@@ -13,6 +13,7 @@ import { MenuType } from './Menu.types';
 
 // Constants
 import testAttributes from "../../testAttributes";
+import TopBoard from '../../components/Poster/TopBoard';
 
 const Scene = React.lazy(() =>
   import(
@@ -39,37 +40,16 @@ const Menu: MenuType = ({history}) => {
 
   const handleBackButtonClick = (): void => history.goBack();
 
-  const isBackButtonHidden = ['/', '/flappy-bird', '/flappy-bird/'].includes(history.location.pathname);
+  const isBackButtonHidden = ['/', '/leaderboard', '/game', '/flappy-bird', '/flappy-bird/'].includes(history.location.pathname);
 
   const fallbackNode = <p>Loading...</p>;
 
   return (
     <div className={styles.Menu} data-testid={testAttributes.MENU_COMPONENT}>
-      <button
-        onClick={handleBackButtonClick}
-        hidden={isBackButtonHidden}
-        data-testid={testAttributes.BACK_BUTTON}
-      >
-        Back
-      </button>
       <Suspense fallback={fallbackNode}>{routes}</Suspense>
       <div className={styles.Links}>
-        <a
-          href='https://github.com/corocoto/flappy-bird/blob/master/LICENSE'
-          target='_blank'
-          className={styles.License}
-          rel='noopener noreferrer license'
-          title='Link on the licence'
-          data-testid={testAttributes.LICENSE_LINK}
-        > </a>
-        <a
-          href='https://github.com/corocoto/flappy-bird'
-          target='_blank'
-          className={styles.Repo}
-          rel='noopener noreferrer bookmark'
-          title='Link on the repository'
-          data-testid={testAttributes.REPO_LINK}
-        > </a>
+      <a href="https://linktr.ee/BOBAdventures"><PublicIcon style={{ fontSize: 40, color: "yellow" }} /></a>
+      <a href="https://twitter.com/CroBobAdventure/"><TwitterIcon style={{ fontSize: 40, color: "yellow" }} /></a>
       </div>
     </div>
   )

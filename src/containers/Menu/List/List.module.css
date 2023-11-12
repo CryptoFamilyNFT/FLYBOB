@@ -11,12 +11,14 @@
   text-align: center;
   border: none;
   padding: 0;
+  font-family: Josefin Sans, sans-serif;
 }
 
 
 .List button a {
-  color: var(--white-color);
+  color: var(--black-color);
   font-size: 18px;
   padding: 12px 0;
   width: 100%;
+  font-family: Josefin Sans, sans-serif;
 }
