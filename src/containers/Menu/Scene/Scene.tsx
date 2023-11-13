@@ -71,6 +71,11 @@ const Scene = () => {
   const score = useRef<number>(0);
   const requestID = useRef<number>(0);
   const isConnected = context.connected || false;
+  const [score_user, setScore] = useState(0);
+
+  const updateScoreUI = (score: number) => {
+    context.score = score
+  }
 
   useEffect(() => {
     if (context.connected && context?.BobTokenIds && context?.BobTokenIds.length === 0) {
@@ -113,15 +118,12 @@ const Scene = () => {
 
   const CheckScorePlayer = async (scoreToVerify: number, player: string) => {
     try {
-      // Ottenere il punteggio attuale del giocatore
       const prevScores = await Api.getScoreByUser(player);
-      
-      // Se il giocatore ha già un punteggio
       if (prevScores && prevScores.length > 0) {
         const playerScore = prevScores.find((n) => n.player === player);
-  
+
         if (scoreToVerify >= Number(playerScore?.score)) {
-          // Aggiornare il punteggio solo se il nuovo punteggio è maggiore o uguale al punteggio attuale
+          updateScoreUI(scoreToVerify)
           await Api.updatePlayer(player, scoreToVerify.toString());
           console.log('Updated score:', scoreToVerify);
         }
@@ -132,10 +134,9 @@ const Scene = () => {
       }
     } catch (error) {
       console.log('Error checking/updating score:', error);
-      // Gestisci gli errori in base alle tue esigenze
     }
   };
-  
+
 
 
   const loadSceneImages = async () => {

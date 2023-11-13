@@ -93,7 +93,7 @@ const Connector: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         disabled={loading}
       >
         {loading ? (
-          <CircularProgress size={20} color="secondary" />
+          <CircularProgress size={20} style={{color: 'yellow'}} />
         ) : (
           <span>{context.addressSigner !== undefined ? `${context.addressSigner.substring(0, 7)}...` : "CONNECT"}</span>
         )}

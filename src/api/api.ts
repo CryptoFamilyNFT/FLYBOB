@@ -5,13 +5,26 @@ interface Score {
   score: string;
 }
 
+
+
 export default class Api {
+
+  static getBASE_URL(opt: number): string {
+    switch (opt) {
+      case 0:
+        return "http://localhost:5000/api";
+      case 1:
+        return "https://bobdb.onrender.com/api";
+      default:
+        return "https://bobdb.onrender.com/api";
+    }
+  }
 
   public static BASE_URL = 'https://bobdb.onrender.com/api';
 
   public static async getScores(): Promise<Score[]> {
     try {
-      const response = await axios.get(`${Api.BASE_URL}/scores`);
+      const response = await axios.get(`${Api.getBASE_URL(0)}/scores`);
       console.log("response", response)
       await Promise.all([response])
 
@@ -24,7 +37,7 @@ export default class Api {
 
   public static async getPlayer(): Promise<Score[]> {
     try {
-      const response = await axios.get(`${Api.BASE_URL}/players`);
+      const response = await axios.get(`${Api.getBASE_URL(0)}/players`);
       return response.data;
     } catch (error) {
       console.error('Error fetching scores:', error);
@@ -34,7 +47,7 @@ export default class Api {
 
   public static async getScoreByUser(player: string): Promise<any[]> {
     try {
-      const response = await axios.get(`${this.BASE_URL}/scores/${player}`);
+      const response = await axios.get(`${Api.getBASE_URL(0)}/scores/${player}`);
       console.log(response.data)
       return response.data
     } catch (error) {
@@ -45,7 +58,7 @@ export default class Api {
 
   public static async addScore(player: string, score: string): Promise<void> {
     try {
-      await axios.post(`${Api.BASE_URL}/scores`, { player, score });
+      await axios.post(`${Api.getBASE_URL(0)}/scores`, { player, score });
     } catch (error) {
       console.error('Error adding score:', error);
       throw error;
@@ -54,7 +67,7 @@ export default class Api {
 
   public static async findPlayer(player: string): Promise<Score[]> {
     try {
-      const response = await axios.get(`${Api.BASE_URL}/scores/${player}`);
+      const response = await axios.get(`${Api.getBASE_URL(0)}/scores/${player}`);
       console.log(response.data)
       return response.data;
     } catch (error) {
@@ -65,7 +78,7 @@ export default class Api {
 
   public static async updatePlayer(player: string, newScore: string): Promise<void> {
     try {
-      await axios.put(`${Api.BASE_URL}/scores`, { player, newScore });
+      await axios.put(`${Api.getBASE_URL(0)}/scores/${player}/${newScore}`);
     } catch (error) {
       console.error('Error updating player:', error);
       throw error;

@@ -1,5 +1,5 @@
 // Libs
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 
 // Styles
@@ -8,12 +8,11 @@ import './App.css';
 // Components
 import Menu from './containers/Menu';
 import Poster from './components/Poster';
-
-// Constants
-import testAttributes from "./testAttributes";
-import Navbar from './Navbar';
+import Modal from '@mui/material/Modal'; // Importa Modal
 import { makeStyles, useMediaQuery, useTheme } from '@material-ui/core';
 import TopBoard from './components/Poster/TopBoard';
+import Navbar from './Navbar';
+import Bobz from './containers/Menu/Bobz';
 
 const useStyles = makeStyles((theme: any) => ({
   PosterMobile: {
@@ -34,27 +33,43 @@ const useStyles = makeStyles((theme: any) => ({
 }));
 
 function App() {
-  const theme = useTheme()
+  const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
+  // Stato per gestire l'apertura del modal
+  const [openModal, setOpenModal] = useState(false);
+
+  // Funzione per aprire il modal
+  const handleOpenModal = () => {
+    setOpenModal(true);
+  };
+
+  // Funzione per chiudere il modal
+  const handleCloseModal = () => {
+    setOpenModal(false);
+  };
+
   return (
     <BrowserRouter>
-      <div className="App-blurred" data-testid={testAttributes.APP_COMPONENT}>
+      <div className="App-blurred">
         <div className="App-content"></div>
         {isMobile ? (
           <>
-            <Navbar />
+            <Navbar handleOpenModal={handleOpenModal} />
             <Poster />
             <Menu />
           </>
-
         ) : (
           <>
-            <Navbar />
+            <Navbar handleOpenModal={handleOpenModal} />
             <Poster />
             <Menu />
           </>
         )}
 
+        <Modal open={openModal} onClose={() => setOpenModal(openModal)}>
+            <Bobz handleCloseModal={handleCloseModal} />
+        </Modal>
       </div>
     </BrowserRouter>
   );

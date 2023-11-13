@@ -269,7 +269,9 @@ export default class EtherHelper {
             const BobPass = new Contract('0x41C7874A2fE9D1ea126bfBD44597A1f96546152e', BobPassABI, signer);
 
             const URIpath = await BobPass.tokenURI(tokenId);
-            const response = await fetch(URIpath);
+
+            const solvedURI =  'https://ipfs.io/ipfs/' + URIpath.slice(7) 
+            const response = await fetch(solvedURI);
             const tokenData = await response.json();
             return tokenData;
         }
