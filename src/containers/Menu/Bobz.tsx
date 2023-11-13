@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Paper, Card, CardContent, Typography, makeStyles, Switch, Grid, styled, Modal } from '@material-ui/core';
+import { Paper, Card, CardContent, Typography, makeStyles, Switch, Grid, styled, Modal, useTheme } from '@material-ui/core';
 import EtherHelper from '../../ethers/EtherHelper';
 import { EtherContext, EtherContextRepository } from '../../ethers/EtherContext';
 import { IEtherContext } from '../../ethers/IEtherContext';
 import CardHeader from '@material-ui/core/CardHeader';
-import { Button, CardMedia, Divider } from '@mui/material';
+import { Button, CardMedia, Divider, useMediaQuery } from '@mui/material';
 import CardActions from '@material-ui/core/CardActions';
 import Avatar from '@material-ui/core/Avatar';
 import IconButton from '@material-ui/core/IconButton';
@@ -52,7 +52,8 @@ const Bobz: React.FC<BobzWrap> = ({ handleCloseModal }) => {
     const { context, saveContext } = useContext(EtherContext) as EtherContextRepository
     const classes = useStyles();
     const [tokenCards, setTokenCards] = useState<JSX.Element[]>([]);
-    const [open, setOpenModal] = useState(true);
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
     const fetchTokenCards = async () => {
         const newTokenCards: JSX.Element[] = [];
@@ -107,8 +108,20 @@ const Bobz: React.FC<BobzWrap> = ({ handleCloseModal }) => {
                 <Button variant='contained' style={{ color: 'yellow', background: 'black', border: '2px solid transparent', borderRadius: '15', marginLeft: 20 }} onClick={handleCloseModal}>Close</Button>
             </div>
             <div style={{ marginTop: 20 }}>
-                {tokenCards}
-
+                {isMobile && (
+                    <>
+                        {tokenCards}
+                    </>
+                )}
+                {!isMobile && (
+                    <Grid container spacing={2}>
+                        {tokenCards.map((card, index) => (
+                            <Grid item key={index} xs={4}> {/* Dividi lo spazio in 3 colonne per ogni card */}
+                                {card}
+                            </Grid>
+                        ))}
+                    </Grid>
+                )}
             </div>
         </Paper>
     );
