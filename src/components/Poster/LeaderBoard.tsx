@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { makeStyles } from '@material-ui/core';
+import { makeStyles, useMediaQuery, useTheme } from '@material-ui/core';
 import {
   Paper,
   Table,
@@ -37,7 +37,9 @@ interface Score {
 
 const LeaderBoard = () => {
   const classes = useStyles();
+  const theme = useTheme()
   const [top10Scores, setTop10Scores] = useState<Score[]>();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   useEffect(() => {
     const getLeaderBoard = async () => {
@@ -61,7 +63,9 @@ const LeaderBoard = () => {
   }, []);
 
   return (
-    <Paper style={{ backgroundColor: 'yellow', minHeight: 300, maxHeight: 300, overflowY: 'auto', gap: 10, border: '1px solid aqua' }}>
+    <>
+    {!isMobile && (
+      <Paper style={{ backgroundColor: 'yellow', minHeight: 300, maxHeight: 300, overflowY: 'auto', gap: 10, border: '1px solid aqua' }}>
       <Typography variant="h4" className={classes.title} style={{ fontFamily: 'Josefin Sans, sans-serif', marginTop: 30 }}>
         Leaderboard
       </Typography>
@@ -88,6 +92,37 @@ const LeaderBoard = () => {
         </Table>
       </TableContainer>
     </Paper>
+    )}
+    {isMobile && (
+      <Paper style={{ backgroundColor: 'yellow', maxHeight: 280, overflowY: 'auto', gap: 10, border: '1px solid aqua', width: 360 }}>
+      <Typography variant="h4" className={classes.title} style={{ fontFamily: 'Josefin Sans, sans-serif', marginTop: 30 }}>
+        Leaderboard
+      </Typography>
+      <TableContainer>
+        <Table className={classes.table} aria-label="simple table">
+          <TableHead>
+            <TableRow>
+              <TableCell style={{ fontFamily: 'Josefin Sans, sans-serif' }}>#</TableCell>
+              <TableCell style={{ fontFamily: 'Josefin Sans, sans-serif' }}>User</TableCell>
+              <TableCell style={{ fontFamily: 'Josefin Sans, sans-serif' }}>Score</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {top10Scores?.map((row, index) => (
+              <TableRow key={index}>
+                <TableCell style={{ fontFamily: 'Josefin Sans, sans-serif' }} component="th" scope="row">
+                  {index + 1}
+                </TableCell>
+                <TableCell style={{ fontFamily: 'Josefin Sans, sans-serif' }}>{row.player?.slice(0, 5) + '...' + row.player?.slice(-5)}</TableCell>
+                <TableCell style={{ fontFamily: 'Josefin Sans, sans-serif' }}>{row.score}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Paper>
+    )}
+    </>
   );
 };
 

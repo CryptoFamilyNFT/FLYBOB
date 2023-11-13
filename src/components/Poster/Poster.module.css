@@ -1,12 +1,3 @@
-.Poster {
-  width: 100%;
-  height: 64px;
-  border-right: 2px solid aqua;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: aqua;
-}
 
 .Poster{
   width: 100%;
@@ -32,6 +23,12 @@
 
 .Poster img {
   height: 100%;
+}
+
+.PosterMobile {
+  height: 50%;
+  width: 100;
+
 }
 
 @media screen and (min-width: 768px) {
