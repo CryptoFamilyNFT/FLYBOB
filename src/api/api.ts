@@ -24,7 +24,7 @@ export default class Api {
 
   public static async getScores(): Promise<Score[]> {
     try {
-      const response = await axios.get(`${Api.getBASE_URL(0)}/scores`);
+      const response = await axios.get(`${Api.getBASE_URL(1)}/scores`);
       console.log("response", response)
       await Promise.all([response])
 
@@ -37,7 +37,7 @@ export default class Api {
 
   public static async getPlayer(): Promise<Score[]> {
     try {
-      const response = await axios.get(`${Api.getBASE_URL(0)}/players`);
+      const response = await axios.get(`${Api.getBASE_URL(1)}/players`);
       return response.data;
     } catch (error) {
       console.error('Error fetching scores:', error);
@@ -47,7 +47,7 @@ export default class Api {
 
   public static async getScoreByUser(player: string): Promise<any[]> {
     try {
-      const response = await axios.get(`${Api.getBASE_URL(0)}/scores/${player}`);
+      const response = await axios.get(`${Api.getBASE_URL(1)}/scores/${player}`);
       console.log(response.data)
       return response.data
     } catch (error) {
@@ -58,7 +58,7 @@ export default class Api {
 
   public static async addScore(player: string, score: string): Promise<void> {
     try {
-      await axios.post(`${Api.getBASE_URL(0)}/scores`, { player, score });
+      await axios.post(`${Api.getBASE_URL(1)}/scores`, { player, score });
     } catch (error) {
       console.error('Error adding score:', error);
       throw error;
@@ -67,7 +67,7 @@ export default class Api {
 
   public static async findPlayer(player: string): Promise<Score[]> {
     try {
-      const response = await axios.get(`${Api.getBASE_URL(0)}/scores/${player}`);
+      const response = await axios.get(`${Api.getBASE_URL(1)}/scores/${player}`);
       console.log(response.data)
       return response.data;
     } catch (error) {
@@ -78,7 +78,7 @@ export default class Api {
 
   public static async updatePlayer(player: string, newScore: string): Promise<void> {
     try {
-      await axios.put(`${Api.getBASE_URL(0)}/scores/${player}/${newScore}`);
+      await axios.put(`${Api.getBASE_URL(1)}/scores/${player}/${newScore}`);
     } catch (error) {
       console.error('Error updating player:', error);
       throw error;
