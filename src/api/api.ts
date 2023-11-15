@@ -65,6 +65,15 @@ export default class Api {
     }
   }
 
+  public static async resetScores(): Promise<void> {
+    try {
+        await axios.post(`${Api.getBASE_URL(1)}/scores/reset`);
+    } catch (error) {
+        console.error('Error resetting scores:', error);
+        throw error;
+    }
+}
+
   public static async findPlayer(player: string): Promise<Score[]> {
     try {
       const response = await axios.get(`${Api.getBASE_URL(1)}/scores/${player}`);

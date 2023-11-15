@@ -41,6 +41,23 @@ const LeaderBoard = () => {
   const [top10Scores, setTop10Scores] = useState<Score[]>();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
+  const getLeaderBoard = async () => {
+    try {
+      const scores = await Api.getScores();
+
+      // Ordina i punteggi in ordine decrescente
+      const sortedScores = scores.sort((a, b) => parseInt(b.score) - parseInt(a.score));
+
+      // Prendi solo i primi 10 punteggi
+      const top10 = sortedScores.slice(0, 10);
+      console.log(top10)
+      setTop10Scores(top10);
+    } catch (e) {
+      console.log(e);
+      setTop10Scores([{ player: '', score: '' }]);
+    }
+  };
+
   useEffect(() => {
     const getLeaderBoard = async () => {
       try {
@@ -59,69 +76,91 @@ const LeaderBoard = () => {
       }
     };
 
+    const resetScoresIfNeeded = async () => {
+      const currentDate = new Date();
+      const currentDay = currentDate.getDay(); 
+      console.log(currentDay)
+
+      if (currentDay === 1) {
+        try {
+          await Api.resetScores();
+          getLeaderBoard();
+        } catch (error) {
+          console.error('Error resetting scores:', error);
+        }
+      }
+    };
+
     getLeaderBoard();
+    resetScoresIfNeeded();
+
+    // Set up a timer to check for score reset every hour (adjust the interval as needed)
+    const timerId = setInterval(resetScoresIfNeeded, 1000 * 60 * 60);
+
+    return () => clearInterval(timerId);
   }, []);
+
 
   return (
     <>
-    {!isMobile && (
-      <Paper style={{ backgroundColor: 'yellow', minHeight: 300, maxHeight: 300, overflowY: 'auto', gap: 10, border: '1px solid aqua' }}>
-      <Typography variant="h4" className={classes.title} style={{ fontFamily: 'Josefin Sans, sans-serif', marginTop: 30 }}>
-        Leaderboard
-      </Typography>
-      <TableContainer>
-        <Table className={classes.table} aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              <TableCell style={{ fontFamily: 'Josefin Sans, sans-serif' }}>#</TableCell>
-              <TableCell style={{ fontFamily: 'Josefin Sans, sans-serif' }}>User</TableCell>
-              <TableCell style={{ fontFamily: 'Josefin Sans, sans-serif' }}>Score</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {top10Scores?.map((row, index) => (
-              <TableRow key={index}>
-                <TableCell style={{ fontFamily: 'Josefin Sans, sans-serif' }} component="th" scope="row">
-                  {index + 1}
-                </TableCell>
-                <TableCell style={{ fontFamily: 'Josefin Sans, sans-serif' }}>{row.player?.slice(0, 5) + '...' + row.player?.slice(-5)}</TableCell>
-                <TableCell style={{ fontFamily: 'Josefin Sans, sans-serif' }}>{row.score}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Paper>
-    )}
-    {isMobile && (
-      <Paper style={{ backgroundColor: 'yellow', maxHeight: 280, overflowY: 'auto', gap: 10, border: '1px solid aqua', width: 360 }}>
-      <Typography variant="h4" className={classes.title} style={{ fontFamily: 'Josefin Sans, sans-serif', marginTop: 30 }}>
-        Leaderboard
-      </Typography>
-      <TableContainer>
-        <Table className={classes.table} aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              <TableCell style={{ fontFamily: 'Josefin Sans, sans-serif' }}>#</TableCell>
-              <TableCell style={{ fontFamily: 'Josefin Sans, sans-serif' }}>User</TableCell>
-              <TableCell style={{ fontFamily: 'Josefin Sans, sans-serif' }}>Score</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {top10Scores?.map((row, index) => (
-              <TableRow key={index}>
-                <TableCell style={{ fontFamily: 'Josefin Sans, sans-serif' }} component="th" scope="row">
-                  {index + 1}
-                </TableCell>
-                <TableCell style={{ fontFamily: 'Josefin Sans, sans-serif' }}>{row.player?.slice(0, 5) + '...' + row.player?.slice(-5)}</TableCell>
-                <TableCell style={{ fontFamily: 'Josefin Sans, sans-serif' }}>{row.score}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Paper>
-    )}
+      {!isMobile && (
+        <Paper style={{ backgroundColor: 'yellow', minHeight: 300, maxHeight: 300, overflowY: 'auto', gap: 10, border: '1px solid aqua' }}>
+          <Typography variant="h4" className={classes.title} style={{ fontFamily: 'Josefin Sans, sans-serif', marginTop: 30 }}>
+            Leaderboard
+          </Typography>
+          <TableContainer>
+            <Table className={classes.table} aria-label="simple table">
+              <TableHead>
+                <TableRow>
+                  <TableCell style={{ fontFamily: 'Josefin Sans, sans-serif' }}>#</TableCell>
+                  <TableCell style={{ fontFamily: 'Josefin Sans, sans-serif' }}>User</TableCell>
+                  <TableCell style={{ fontFamily: 'Josefin Sans, sans-serif' }}>Score</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {top10Scores?.map((row, index) => (
+                  <TableRow key={index}>
+                    <TableCell style={{ fontFamily: 'Josefin Sans, sans-serif' }} component="th" scope="row">
+                      {index + 1}
+                    </TableCell>
+                    <TableCell style={{ fontFamily: 'Josefin Sans, sans-serif' }}>{row.player?.slice(0, 5) + '...' + row.player?.slice(-5)}</TableCell>
+                    <TableCell style={{ fontFamily: 'Josefin Sans, sans-serif' }}>{row.score}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Paper>
+      )}
+      {isMobile && (
+        <Paper style={{ backgroundColor: 'yellow', maxHeight: 280, overflowY: 'auto', gap: 10, border: '1px solid aqua', width: 360 }}>
+          <Typography variant="h4" className={classes.title} style={{ fontFamily: 'Josefin Sans, sans-serif', marginTop: 30 }}>
+            Leaderboard
+          </Typography>
+          <TableContainer>
+            <Table className={classes.table} aria-label="simple table">
+              <TableHead>
+                <TableRow>
+                  <TableCell style={{ fontFamily: 'Josefin Sans, sans-serif' }}>#</TableCell>
+                  <TableCell style={{ fontFamily: 'Josefin Sans, sans-serif' }}>User</TableCell>
+                  <TableCell style={{ fontFamily: 'Josefin Sans, sans-serif' }}>Score</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {top10Scores?.map((row, index) => (
+                  <TableRow key={index}>
+                    <TableCell style={{ fontFamily: 'Josefin Sans, sans-serif' }} component="th" scope="row">
+                      {index + 1}
+                    </TableCell>
+                    <TableCell style={{ fontFamily: 'Josefin Sans, sans-serif' }}>{row.player?.slice(0, 5) + '...' + row.player?.slice(-5)}</TableCell>
+                    <TableCell style={{ fontFamily: 'Josefin Sans, sans-serif' }}>{row.score}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Paper>
+      )}
     </>
   );
 };
