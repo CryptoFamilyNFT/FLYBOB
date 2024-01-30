@@ -83,6 +83,7 @@ const Scene = () => {
     player: '',
     score: ''
   });
+  const [forceUpdate, setForceUpdate] = useState(0);
 
   const updateScoreUI = (score: number) => {
     context.score = score
@@ -100,10 +101,10 @@ const Scene = () => {
     try {
       // Ottieni i punteggi precedenti del giocatore
       const prevScores = await Api.getScoreByUser(player);
-  
+
       if (prevScores && prevScores.length > 0) {
         const playerScore = prevScores[0]; // Prendi solo il primo punteggio (il più recente)
-  
+
         if (scoreToVerify > playerScore.score) {
           // Se il nuovo punteggio è maggiore del punteggio precedente, aggiorna il punteggio
           updateScoreUI(scoreToVerify);
@@ -120,7 +121,7 @@ const Scene = () => {
       // Tratta l'errore in base alle tue esigenze
     }
   };
-  
+
 
   const CheckPlayerGameInfo = async (player: string) => {
     if (context.addressSigner && context.BobTokenIds) {
@@ -285,7 +286,7 @@ const Scene = () => {
     canvasContext.current.restore();
 
     BIRD_COPY.rotation = -45; // Reset rotation to 0
-    let BIRD_DEG = 45;
+    const BIRD_DEG = 45;
 
     BIRD_COPY.position.y += GRAVITATION_VALUE;
     BIRD_COPY.rotation += BIRD_DEG;
@@ -302,44 +303,14 @@ const Scene = () => {
     canvasContext.current.fillText(scoreText, scoreX, scoreY);
 
     requestID.current = window.requestAnimationFrame(renderer);
-  }, [setStarterValues, isConnected, isPlayable, data.lives]);
+    // eslint-disable-next-line no-sparse-arrays
+  }, [setStarterValues, isConnected, isPlayable, data.lives, BIRD_COPY]);
 
   const removeEventListeners = useCallback(() => {
     window.removeEventListener('keydown', keyDownPressHandler);
     canvasRef.current?.removeEventListener('touchstart', keyDownPressHandler);
     window.cancelAnimationFrame(requestID.current);
   }, [requestID]);
-
-
-
-  const keyDownPressHandler = () => {
-    if (isPlayable) {
-      BIRD_COPY.position.y -= 20;
-      BIRD_COPY.rotation = -60;
-      flySound.play();
-    }
-  };
-
-  const keyUpPressHandler = () => {
-    BIRD_COPY.rotation = -45; // Set rotation angle to -45 degrees when key is released
-  };
-
-  useEffect(() => {
-    initCanvasContext();
-    setStarterValues();
-    loadSceneSounds();
-    (async () => {
-      await loadSceneImages();
-      renderer();
-      window.addEventListener('keydown', keyDownPressHandler);
-      canvasRef.current?.addEventListener('touchstart', handleCanvasInteraction);
-    })();
-
-    return () => {
-      removeEventListeners();
-    };
-  }, [removeEventListeners, renderer, setStarterValues, canvasInteractionEnabled]);
-
 
   useEffect(() => {
     if (context.connected && context?.BobTokenIds && context?.BobTokenIds.length === 0) {
@@ -357,17 +328,20 @@ const Scene = () => {
     }
   }, [data.lives])
 
+  const keyDownPressHandler = () => {
+    BIRD_COPY.position.y -= 35;
+    BIRD_COPY.rotation = -60;
+    flySound.play();
+  };
+
   const handleCanvasInteraction = () => {
     if (!gameStarted) {
       setGameStarted(true);
       setIsPlayable(true);  // Enable gameplay when the user taps
     } else if (isPlayable) {
-      BIRD_COPY.position.y -= 30;
-      BIRD_COPY.rotation = -60;
-      flySound.play();
+      keyDownPressHandler();
     }
   };
-
 
   const enableGame = () => {
     if (isConnected && context?.BobTokenIds && context?.BobTokenIds.length > 0) {
@@ -416,12 +390,13 @@ const Scene = () => {
   };
 
   const handleRestartGame = () => {
-    
+
     CheckScorePlayer(finalScore, context.addressSigner ?? '')
       .then(() => {
         updateLivesArray(data.lives);
         handleLoseLife();
         CheckPlayerGameInfo(context.addressSigner ?? '');
+        renderer()
 
         if (data.lives > 0) {
           setIsPlayable(true);
@@ -432,12 +407,33 @@ const Scene = () => {
           setGameOverModal(false);
           setDead(true);
         }
+
+        setForceUpdate((prev) => prev + 1);
       })
       .catch((error) => {
         console.error('Error checking score:', error);
         // Handle the error
       });
   };
+
+  useEffect(() => {
+    initCanvasContext();
+    setStarterValues();
+    loadSceneSounds();
+    (async () => {
+      await loadSceneImages();
+      renderer();
+      window.addEventListener('keydown', keyDownPressHandler);
+      canvasRef.current?.addEventListener('touchstart', handleCanvasInteraction);
+    })();
+
+    return () => {
+      removeEventListeners();
+      window.removeEventListener('keydown', keyDownPressHandler);
+      canvasRef.current?.removeEventListener('touchstart', handleCanvasInteraction);
+    };
+  }, [forceUpdate, removeEventListeners, renderer, setStarterValues, canvasInteractionEnabled]);
+
 
   const closeModalConnected = () => {
     let connected: boolean = isConnected

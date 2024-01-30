@@ -9,7 +9,7 @@ import ScoreSound from "../../../assets/sounds/score.mp3";
 import {createAudio, createImage} from "../../../helpers";
 
 export const GAP_VALUE = 130;
-export const GRAVITATION_VALUE = 1.5;
+export const GRAVITATION_VALUE = 1.2;
 
 export const CANVAS = {
   width: 288,
