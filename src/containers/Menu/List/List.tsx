@@ -112,8 +112,7 @@ const List = () => {
   }
 
 
-  const dev1 = "0xAb2CDc3986B50Ede02C2F9b55301f71276443736"
-  const dev2 = "0x8117529eC3Fc08D72fc933dE373C14D852a52B85"
+  const dev1 = "0x8117529eC3Fc08D72fc933dE373C14D852a52B85"
 
   useEffect(() => {
     CheckPlayerGameInfo(context.addressSigner ?? '')
