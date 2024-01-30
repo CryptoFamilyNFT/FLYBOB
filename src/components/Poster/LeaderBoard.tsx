@@ -44,13 +44,8 @@ const LeaderBoard = () => {
   const getLeaderBoard = async () => {
     try {
       const scores = await Api.getScores();
-
-      // Ordina i punteggi in ordine decrescente
       const sortedScores = scores.sort((a, b) => parseInt(b.score) - parseInt(a.score));
-
-      // Prendi solo i primi 10 punteggi
       const top10 = sortedScores.slice(0, 10);
-      console.log(top10)
       setTop10Scores(top10);
     } catch (e) {
       console.log(e);
@@ -59,46 +54,16 @@ const LeaderBoard = () => {
   };
 
   useEffect(() => {
-    const getLeaderBoard = async () => {
-      try {
-        const scores = await Api.getScores();
-
-        // Ordina i punteggi in ordine decrescente
-        const sortedScores = scores.sort((a, b) => parseInt(b.score) - parseInt(a.score));
-
-        // Prendi solo i primi 10 punteggi
-        const top10 = sortedScores.slice(0, 10);
-        console.log(top10)
-        setTop10Scores(top10);
-      } catch (e) {
-        console.log(e);
-        setTop10Scores([{ player: '', score: '' }]);
-      }
-    };
-
-    const resetScoresIfNeeded = async () => {
-      const currentDate = new Date();
-      const currentDay = currentDate.getDay(); 
-      console.log(currentDay)
-
-      if (currentDay === 1) {
-        try {
-          await Api.resetScores();
-          getLeaderBoard();
-        } catch (error) {
-          console.error('Error resetting scores:', error);
-        }
-      }
-    };
-
     getLeaderBoard();
-    resetScoresIfNeeded();
-
-    // Set up a timer to check for score reset every hour (adjust the interval as needed)
-    const timerId = setInterval(resetScoresIfNeeded, 1000 * 60 * 60);
-
-    return () => clearInterval(timerId);
   }, []);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      getLeaderBoard();
+    }, 20000);
+
+    return () => clearInterval(intervalId);
+  }, [top10Scores]);
 
 
   return (

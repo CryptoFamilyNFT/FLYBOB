@@ -1,10 +1,16 @@
 import axios from 'axios';
 
-interface Score {
+export interface Score {
   player: string;
   score: string;
 }
 
+export interface GameInfo {
+  userId: string;
+  nftCount: number;
+  lives: number;
+  lastResetTime: number;
+}
 
 
 export default class Api {
@@ -56,25 +62,80 @@ export default class Api {
     }
   }
 
+  public static async getGameInfo(account: string): Promise<any> {
+    try {
+      console.log(`Making API request for game info for account ${account}`);
+      const response = await axios.get(`${Api.getBASE_URL(1)}/scores/${account}`);
+      console.log('API Response:', response);
+  
+      // Estrai direttamente il campo gameInfo dalla risposta.
+      const gameInfoData = response.data.map((item: any) => item.gameInfo);
+  
+      return gameInfoData;
+    } catch (error) {
+      console.error(`Error fetching game info for account ${account}:`, error);
+    }
+  }
+  
+
+  // Modifica la chiamata ad axios.post nel tuo frontend
+  public static async addGameInfo(player: string, score: string, gameInfo: GameInfo): Promise<void> {
+    try {
+      console.log("gameInfo", gameInfo, "score", score, "player", player);
+
+      const response = await axios.post(
+        `${Api.getBASE_URL(1)}/scores`,
+        {
+          player,
+          score,
+          gameInfo
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json', // Assicurati che l'header Content-Type sia correttamente impostato
+          },
+        }
+      );
+
+      console.log('API Response:', response.data);
+    } catch (error) {
+      console.error('Error adding game info:', error);
+    }
+  }
+
+
+
+  public static async updateGameInfo(player: string, updatedGameInfo: GameInfo): Promise<void> {
+    try {
+      await axios.put(`${Api.getBASE_URL(1)}/scores`, {player, updatedGameInfo }, { headers: { 'Content-Type': 'application/json' } });
+    } catch (error) {
+      console.error(`Error updating game info for user ${player}:`, error);
+      throw error;
+    }
+  }  
+
+
   public static async addScore(player: string, score: string): Promise<void> {
     try {
-      await axios.post(`${Api.getBASE_URL(1)}/scores`, { player, score });
+      const response = await axios.post(`${Api.getBASE_URL(1)}/scores`, { player, score });
+      console.log('API Response:', response.data);
     } catch (error) {
       console.error('Error adding score:', error);
       throw error;
     }
   }
 
-  public static async resetScores(): Promise<void> {
+  public static async resetScoreAll(): Promise<void> {
     try {
-        await axios.post(`${Api.getBASE_URL(1)}/scores/reset`);
+      const response = await axios.post(`${Api.getBASE_URL(1)}/scores/reset`);
+      console.log('API Response:', response.data, response);
     } catch (error) {
-        console.error('Error resetting scores:', error);
-        throw error;
+      console.error('Error resetting scores:', error);
+      throw error;
     }
-}
+  }
 
-  public static async findPlayer(player: string): Promise<Score[]> {
+  public static async findPlayer(player: string): Promise<Score> {
     try {
       const response = await axios.get(`${Api.getBASE_URL(1)}/scores/${player}`);
       console.log(response.data)
@@ -87,7 +148,9 @@ export default class Api {
 
   public static async updatePlayer(player: string, newScore: string): Promise<void> {
     try {
-      await axios.put(`${Api.getBASE_URL(1)}/scores/${player}/${newScore}`);
+      const response = await axios.put(`${Api.getBASE_URL(1)}/scores/${player}/${newScore}`);
+      console.log("[ii] — RESPONSE:", response.data, response);
+      console.log(response.data)
     } catch (error) {
       console.error('Error updating player:', error);
       throw error;

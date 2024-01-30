@@ -57,18 +57,18 @@ function App() {
           <>
             <Navbar handleOpenModal={handleOpenModal} />
             <Poster />
-            <Menu />
+              <Menu />
           </>
         ) : (
           <>
             <Navbar handleOpenModal={handleOpenModal} />
             <Poster />
-            <Menu />
+              <Menu />
           </>
         )}
 
         <Modal open={openModal} onClose={() => setOpenModal(openModal)}>
-            <Bobz handleCloseModal={handleCloseModal} />
+          <Bobz handleCloseModal={handleCloseModal} />
         </Modal>
       </div>
     </BrowserRouter>

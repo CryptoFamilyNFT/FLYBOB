@@ -8,8 +8,8 @@ import FlySound from "../../../assets/sounds/fly.mp3";
 import ScoreSound from "../../../assets/sounds/score.mp3";
 import {createAudio, createImage} from "../../../helpers";
 
-export const GAP_VALUE = 90;
-export const GRAVITATION_VALUE = 1.7;
+export const GAP_VALUE = 130;
+export const GRAVITATION_VALUE = 1.5;
 
 export const CANVAS = {
   width: 288,

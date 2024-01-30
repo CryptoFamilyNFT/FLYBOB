@@ -5,7 +5,6 @@ import TwitterIcon from '@mui/icons-material/Twitter';
 import PublicIcon from '@mui/icons-material/Public';
 import styles from './Menu.module.css';
 import Modal from '@mui/material/Modal'; // Importa Modal
-import Bobz from './Bobz';
 import List from './List';
 import { MenuType } from './Menu.types';
 
@@ -15,6 +14,10 @@ const Scene = React.lazy(() =>
 
 const About = React.lazy(() =>
   import('./About')
+);
+
+const Bobz = React.lazy(() =>
+  import('./Bobz')
 );
 
 const Menu: MenuType = ({ history }) => {

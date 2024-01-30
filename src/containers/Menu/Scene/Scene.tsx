@@ -1,10 +1,11 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useRef, useCallback, useState, useContext } from 'react';
 import classes from './Scene.module.css';
 import _cloneDeep from 'lodash/cloneDeep';
 import go from "../../../assets/images/go.png";
 import { Button, Modal } from '@mui/material';
 import { Alert, AlertTitle } from '@mui/material';
-
+import FavoriteIcon from '@mui/icons-material/Favorite';
 import {
   sounds,
   sceneImages,
@@ -17,7 +18,7 @@ import {
   SCORE_TEXT
 } from './constants';
 import { CoordinatesType } from './Scene.types';
-import Api from '../../../api/api';
+import Api, { GameInfo } from '../../../api/api';
 import { EtherContext, EtherContextRepository } from '../../../ethers/EtherContext';
 import { IEtherContext } from '../../../ethers/IEtherContext';
 import Connector from '../../../Connector';
@@ -56,8 +57,8 @@ const addScores = () => {
 */
 
 const Scene = () => {
-
   const [gameOverModal, setGameOverModal] = useState(false);
+  const [gameStarted, setGameStarted] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const canvasContext = useRef<CanvasRenderingContext2D>();
@@ -67,11 +68,21 @@ const Scene = () => {
   const [notBob, setCloseNotBOB] = useState(false)
   const [canvasInteractionEnabled, setCanvasInteractionEnabled] = useState(false);
   const [isPlayable, setIsPlayable] = useState(false);
-  const [topScore, setTopScore] = useState(0)
   const score = useRef<number>(0);
   const requestID = useRef<number>(0);
   const isConnected = context.connected || false;
-  const [score_user, setScore] = useState(0);
+  const [lives_array, setLivesArray] = useState<number[]>([]);
+  const [isDead, setDead] = useState<boolean>(false);
+  const [data, setData] = useState<GameInfo>({
+    userId: '',
+    nftCount: 0,
+    lives: 0,
+    lastResetTime: 0,
+  });
+  const [playerAndScore, setPlayerAndScore] = useState<Score>({
+    player: '',
+    score: ''
+  });
 
   const updateScoreUI = (score: number) => {
     context.score = score
@@ -85,57 +96,64 @@ const Scene = () => {
     }
   }, [context?.BobTokenIds, context.connected]);
 
-  const GetScore = () => {
-    Api.getScores()
-      .then((scores: any) => {
-        console.log('Scores:', scores);
-      })
-      .catch((error: any) => {
-        console.error('Error fetching scores:', error);
-      });
-  }
-
-  const getPlayer = async () => {
-    try {
-      const player = Api.findPlayer(context.addressSigner ?? '')
-        .then((scores) => {
-          if (scores.length > 0) {
-            console.log(`Scores:`, scores);
-            return true
-          } else {
-            console.log('Player1 not found');
-            return false
-          }
-        })
-      return player
-        .catch((error: any) => {
-          console.error('Error fetching scores for Player1:', error);
-        });
-    } catch (e: any) {
-      console.log("Error on getPlayer: ", e)
-    }
-  }
-
   const CheckScorePlayer = async (scoreToVerify: number, player: string) => {
     try {
+      // Ottieni i punteggi precedenti del giocatore
       const prevScores = await Api.getScoreByUser(player);
+  
       if (prevScores && prevScores.length > 0) {
-        const playerScore = prevScores.find((n) => n.player === player);
-
-        if (scoreToVerify >= Number(playerScore?.score)) {
-          updateScoreUI(scoreToVerify)
+        const playerScore = prevScores[0]; // Prendi solo il primo punteggio (il più recente)
+  
+        if (scoreToVerify > playerScore.score) {
+          // Se il nuovo punteggio è maggiore del punteggio precedente, aggiorna il punteggio
+          updateScoreUI(scoreToVerify);
           await Api.updatePlayer(player, scoreToVerify.toString());
           console.log('Updated score:', scoreToVerify);
         }
       } else {
-        // Se il giocatore non ha ancora un punteggio, aggiungere il nuovo punteggio
+        // Se il giocatore non ha ancora un punteggio, aggiungi il nuovo punteggio
         await Api.addScore(player, scoreToVerify.toString());
         console.log('Added score:', scoreToVerify);
       }
     } catch (error) {
-      console.log('Error checking/updating score:', error);
+      console.error('Error checking/updating score:', error);
+      // Tratta l'errore in base alle tue esigenze
     }
   };
+  
+
+  const CheckPlayerGameInfo = async (player: string) => {
+    if (context.addressSigner && context.BobTokenIds) {
+      try {
+        // Verifica se il giocatore esiste nel database
+        const existingPlayerData = await Api.getGameInfo(context.addressSigner);
+
+        console.log(`Existing Player Data:${existingPlayerData[0]}`)
+        if (!existingPlayerData) {
+          // Se il giocatore non esiste, inizializzalo
+          const gameInfoInit: GameInfo = {
+            userId: context.addressSigner,
+            nftCount: context.BobTokenIds?.length,
+            lives: context.BobTokenIds?.length,
+            lastResetTime: 0,
+          };
+          await Api.addGameInfo(context.addressSigner, '0', gameInfoInit);
+          setLivesArray(Array.from({ length: gameInfoInit.lives }, (_, index) => index));
+          setData(gameInfoInit);
+        } else {
+          setPlayerAndScore(existingPlayerData[0])
+          setData(existingPlayerData[0]);
+          setLivesArray(Array.from({ length: existingPlayerData[0].lives }, (_, index) => index));
+        }
+      } catch (error) {
+        console.error('Error initializing player:', error);
+      }
+    }
+  };
+
+  useEffect(() => {
+    CheckPlayerGameInfo(context.addressSigner ?? '')
+  }, [context?.BobTokenIds, context.connected]);
 
 
 
@@ -173,17 +191,9 @@ const Scene = () => {
     ];
   }, []);
 
-  const handleCanvasInteraction = () => {
-    // Only allow canvas interaction if isConnected is true
-    if (isConnected) {
-      BIRD_COPY.position.y -= 30;
-      BIRD_COPY.rotation = -60;
-      flySound.play();
-    }
-  };
 
   const renderer = useCallback(() => {
-    if (!canvasContext.current || !canvasRef.current || !isConnected) return;
+    if (!canvasContext.current || !canvasRef.current || !isConnected || !isPlayable || data.lives <= 0) return;
     const nuovaLarghezza = backgroundImage.width + 50; // Mantieni la stessa larghezza
     const nuovaAltezza = backgroundImage.height * 2.5; // Aumenta l'altezza al doppio
     canvasContext.current.drawImage(
@@ -236,7 +246,6 @@ const Scene = () => {
         ) ||
         BIRD_COPY.position.y + birdImage.height >= canvasRef.current.height - groundImage.height
       ) {
-
         console.log('Game over');
         setGameOverModal(true);
         setFinalScore(score.current);
@@ -293,7 +302,7 @@ const Scene = () => {
     canvasContext.current.fillText(scoreText, scoreX, scoreY);
 
     requestID.current = window.requestAnimationFrame(renderer);
-  }, [setStarterValues, isConnected]);
+  }, [setStarterValues, isConnected, isPlayable, data.lives]);
 
   const removeEventListeners = useCallback(() => {
     window.removeEventListener('keydown', keyDownPressHandler);
@@ -304,10 +313,11 @@ const Scene = () => {
 
 
   const keyDownPressHandler = () => {
-
-    BIRD_COPY.position.y -= 20;
-    BIRD_COPY.rotation = -60 // Set rotation angle to 45 degrees
-    flySound.play();
+    if (isPlayable) {
+      BIRD_COPY.position.y -= 20;
+      BIRD_COPY.rotation = -60;
+      flySound.play();
+    }
   };
 
   const keyUpPressHandler = () => {
@@ -330,15 +340,6 @@ const Scene = () => {
     };
   }, [removeEventListeners, renderer, setStarterValues, canvasInteractionEnabled]);
 
-  const CheckWalletConnect = () => {
-    if (context.connected !== true) {
-      setConnectWallet(false)
-    }
-  }
-
-  const closeModalBob = () => {
-    setCloseNotBOB(false)
-  }
 
   useEffect(() => {
     if (context.connected && context?.BobTokenIds && context?.BobTokenIds.length === 0) {
@@ -347,12 +348,25 @@ const Scene = () => {
 
   }, [context?.BobTokenIds, context.connected])
 
-  useEffect(() => {
-    if (isConnected) {
-      setIsPlayable(true)
-    }
 
-  }, [canvasInteractionEnabled])
+  useEffect(() => {
+    if (data.lives === 0) {
+      setDead(true)
+    } else {
+      setDead(false)
+    }
+  }, [data.lives])
+
+  const handleCanvasInteraction = () => {
+    if (!gameStarted) {
+      setGameStarted(true);
+      setIsPlayable(true);  // Enable gameplay when the user taps
+    } else if (isPlayable) {
+      BIRD_COPY.position.y -= 30;
+      BIRD_COPY.rotation = -60;
+      flySound.play();
+    }
+  };
 
 
   const enableGame = () => {
@@ -369,24 +383,59 @@ const Scene = () => {
     }
   };
 
+  useEffect(() => {
+    enableGame()
+  }, [context?.BobTokenIds, context.connected]);
+
+  const updateLivesArray = (num: number) => {
+    const newArray = Array.from({ length: num }, (_, index) => index);
+    setLivesArray(newArray);
+  };
+
+  const handleLoseLife = async () => {
+    if (!context.addressSigner) return;
+    const updatedLives = data.lives - 1;
+
+    const updatedGameInfo: GameInfo = {
+      ...data,
+      lastResetTime: Math.floor(Date.now() / 1000) + 86400, //seconds (set to tomorrow)
+      lives: updatedLives,
+    };
+
+    console.log('[I] ** Updated game info:', updatedGameInfo)
+
+    try {
+      await Api.updateGameInfo(context.addressSigner ?? '', updatedGameInfo);
+      const existingPlayerData = await Api.getGameInfo(context.addressSigner);
+
+      // Aggiornare lo stato locale con le nuove informazioni del gioco
+      setData(existingPlayerData[0]);
+    } catch (error) {
+      console.error('Error updating game info:', error);
+    }
+  };
+
   const handleRestartGame = () => {
+    
     CheckScorePlayer(finalScore, context.addressSigner ?? '')
       .then(() => {
-        // Setta un flag per indicare che il gioco è in pausa
-        setIsPlayable(false);
+        updateLivesArray(data.lives);
+        handleLoseLife();
+        CheckPlayerGameInfo(context.addressSigner ?? '');
 
-        // Avvia il gioco dopo mezzo secondo
-        setTimeout(() => {
+        if (data.lives > 0) {
           setIsPlayable(true);
           setGameOverModal(false);
           setFinalScore(score.current);
           setStarterValues();
-          renderer();
-        }, 500);
+        } else {
+          setGameOverModal(false);
+          setDead(true);
+        }
       })
-      .catch(error => {
+      .catch((error) => {
         console.error('Error checking score:', error);
-        // Nel caso di un errore, gestisci come preferisci
+        // Handle the error
       });
   };
 
@@ -397,13 +446,12 @@ const Scene = () => {
 
   console.log("isConnected Modal: ", connectWallet)
   console.log("isPlayable: ", isPlayable)
-
+  console.log("Data: ", data)
   return (
-    <div style={{ height: '100%', marginTop: 100 }} >
+    <div style={{ height: '100%', marginTop: 100 }}>
       <div>
         <p style={{ color: 'yellow', font: '32px Josefin Sans, sans-serif' }}>My TOP Score: {context.score}</p>
       </div>
-
       <Modal
         open={!isConnected}
         className={classes.modal}
@@ -443,15 +491,36 @@ const Scene = () => {
         </div>
       </Modal>
 
+      {context.connected && (
+        <Modal
+          open={isDead}
+          className={classes.modal}
+          style={{ zIndex: 9999 }}
+        >
+          <div className={classes.paper}>
+            <p style={{ color: 'yellow', font: '32px Josefin Sans, sans-serif' }}>You don't have lives :(</p>
+            <div style={{ display: 'flex', flexDirection: 'row', gap: 20, justifyContent: 'center', alignItems: 'center' }}>
+              <a href='https://app.ebisusbay.com/collection/bob-headz' target="_blank" rel="noopener noreferrer">
+                <Button
+                  onClick={handleRestartGame}
+                  variant="contained"
+                  color="primary"
+                >
+                  GET LIVES
+                </Button>
+              </a>
+              <Button style={{ color: 'black', background: 'yellow', width: 50 }} variant='contained'>
+                <NavLink to='/'>Home</NavLink>
+              </Button>
+            </div>
+          </div>
+        </Modal>
+      )}
+
       <Modal
         open={gameOverModal}
         onClose={() => handleRestartGame()}
         className={classes.modal}
-      /*onKeyDown={(event) => {
-        if (event.key === 'Enter' || event.key === ' ') {
-          handleRestartGame();
-        }
-      }}*/
       >
         <div className={classes.paper}>
           <img src={go} alt="GameOver" className={classes.gameOverImage} />
@@ -479,14 +548,13 @@ const Scene = () => {
         </div>
       </Modal>
 
-
       <canvas
         className={classes.Scene}
         ref={canvasRef}
         width={CANVAS.width}
-        height={CANVAS.height} />
-
-    </div >
+        height={CANVAS.height}
+      />
+    </div>
   );
 };
 

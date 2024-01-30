@@ -76,7 +76,7 @@ const Bobz: React.FC<BobzWrap> = ({ handleCloseModal }) => {
                         />
                         <CardMedia
                             className={classes.media}
-                            image={'https://ipfs.io/ipfs/' + tokenData.image.slice(7)}
+                            image={'https://dweb.link/ipfs/' + tokenData.image.slice(7)}
                             title="NFT Image"
                         >
                         </CardMedia>

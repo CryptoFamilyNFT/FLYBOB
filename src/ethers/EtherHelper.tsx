@@ -64,7 +64,7 @@ export default class EtherHelper {
             if (uriWO.slice(0, 3) === 'cdn') {
                 uri_solved = uri
             } else {
-                uri_solved = 'https://ipfs.io/ipfs/' + uri.slice(7);
+                uri_solved = 'https://ipfs.filebase.io/ipfs/' + uri.slice(7);
             }
 
             if (collectionAddress === '0xA5353D17cC3F30DC07D6B0C5510a15Ce382B14A4') {
@@ -270,7 +270,7 @@ export default class EtherHelper {
 
             const URIpath = await BobPass.tokenURI(tokenId);
 
-            const solvedURI =  'https://ipfs.io/ipfs/' + URIpath.slice(7) 
+            const solvedURI =  'https://dweb.link/ipfs/' + URIpath.slice(7) 
             const response = await fetch(solvedURI);
             const tokenData = await response.json();
             return tokenData;
@@ -327,7 +327,6 @@ export default class EtherHelper {
         const score = TopScore(context.addressSigner ?? '')
              .then((result) => context.score = result ?? [])
              .catch((e) => console.log(e))
-
 
         if (!context.chainId) context = await this.getNetwork(provider, context);
 
