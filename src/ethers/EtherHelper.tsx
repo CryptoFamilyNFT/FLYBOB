@@ -245,7 +245,7 @@ export default class EtherHelper {
         }
     }
 
-    private static async getBobBalanceOf(context: IEtherContext) {
+    public static async getBobBalanceOf(context: IEtherContext) {
         if (context.connected) {
             const provider = EtherHelper.initProvider();
             const signer = provider.getSigner(context.addressSigner);

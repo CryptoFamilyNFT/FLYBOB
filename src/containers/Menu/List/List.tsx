@@ -7,6 +7,8 @@ import { EtherContext, EtherContextRepository } from '../../../ethers/EtherConte
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import { Typography } from '@material-ui/core';
 import Api, { GameInfo } from '../../../api/api';
+import { TokenOutlined } from '@mui/icons-material';
+import EtherHelper from '../../../ethers/EtherHelper';
 
 const List = () => {
   const theme = useTheme();
@@ -53,9 +55,12 @@ const List = () => {
   };
 
   const ResetLives = async () => {
-    const updatedGameInfo: GameInfo = {
-      ...data,
-      lives: context.BobTokenIds?.length ?? 0,
+    const TokenOutlined = await EtherHelper.BobBalanceOf(context);
+    const updatedGameInfo: Partial<GameInfo> = {
+      userId: context.addressSigner ?? '',
+      nftCount: TokenOutlined?.length ?? 0,
+      lives: TokenOutlined?.length ?? 0,
+      lastResetTime: 0,
     };
 
     console.log('[i] *** Updated game info in List:', updatedGameInfo)
@@ -77,20 +82,24 @@ const List = () => {
 
     useEffect(() => {
       const intervalId = setInterval(() => {
-        let today = Math.floor(new Date().getTime() / 1000);
-        let lastTime = data.lastResetTime;  // Unix timestamp
-        const remainTimeLast = lastTime - today;
+        let tomorrowTime = data.lastResetTime;  // Unix timestamp
+        const currentDate = new Date().getTime() / 1000; // Ottieni il timestamp Unix della data attuale
+        const remainingTime = tomorrowTime - currentDate;
 
-        const diffInSeconds = Math.floor(remainTimeLast);
-        const hours = Math.floor(diffInSeconds / 3600);
-        const minutes = Math.floor((diffInSeconds % 3600) / 60);
-        const seconds = diffInSeconds % 60;
+        const hours = Math.floor((remainingTime % (24 * 60 * 60)) / (60 * 60));
+        const minutes = Math.floor((remainingTime % (60 * 60)) / 60);
+        const seconds = Math.floor(remainingTime % 60);
 
         if (hours === 0 && minutes === 0 && seconds === 0) {
           setRemainingTime('0'); // Se il tempo è scaduto, setta a null
-        } else {
+        } else if (tomorrowTime < currentDate) {
+          setRemainingTime('0'); // Se il tempo è scaduto, setta a null
+        }
+           else {
           setRemainingTime(`${hours}h - ${minutes}m - ${seconds}s`);
         }
+
+
       }, 1000);
 
       return () => clearInterval(intervalId);

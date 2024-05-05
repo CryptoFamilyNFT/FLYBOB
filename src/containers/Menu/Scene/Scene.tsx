@@ -368,10 +368,10 @@ const Scene = () => {
 
   const handleLoseLife = async () => {
     if (!context.addressSigner) return;
+    if (data.lives <= 0) return;
     const updatedLives = data.lives - 1;
 
-    const updatedGameInfo: GameInfo = {
-      ...data,
+    const updatedGameInfo: Partial<GameInfo> = {
       lastResetTime: Math.floor(Date.now() / 1000) + 86400, //seconds (set to tomorrow)
       lives: updatedLives,
     };
@@ -397,7 +397,7 @@ const Scene = () => {
         handleLoseLife();
         CheckPlayerGameInfo(context.addressSigner ?? '');
         renderer()
-
+        console.log("✅ data.lives: ", data.lives)
         if (data.lives > 0) {
           setIsPlayable(true);
           setGameOverModal(false);

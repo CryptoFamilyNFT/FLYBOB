@@ -18,15 +18,15 @@ export default class Api {
   static getBASE_URL(opt: number): string {
     switch (opt) {
       case 0:
-        return "http://localhost:5000/api";
+        return "https://bobdb.vercel.app/api";
       case 1:
-        return "https://bobdb.onrender.com/api";
+        return "https://bobdb.vercel.app/api";
       default:
-        return "https://bobdb.onrender.com/api";
+        return "https://bobdb.vercel.app/api";
     }
   }
 
-  public static BASE_URL = 'https://bobdb.onrender.com/api';
+  public static BASE_URL = 'https://bobdb.vercel.app/api';
 
   public static async getScores(): Promise<Score[]> {
     try {
@@ -105,14 +105,15 @@ export default class Api {
 
 
 
-  public static async updateGameInfo(player: string, updatedGameInfo: GameInfo): Promise<void> {
+  public static async updateGameInfo(player: string, updatedGameInfo: Partial<GameInfo>): Promise<void> {
     try {
-      await axios.put(`${Api.getBASE_URL(1)}/scores`, {player, updatedGameInfo }, { headers: { 'Content-Type': 'application/json' } });
+      await axios.put(`https://bobdb.vercel.app/api/scores/${player}`, {gameInfo: updatedGameInfo as Partial<GameInfo>}, { headers: { 'Content-Type': 'application/json' } });
     } catch (error) {
       console.error(`Error updating game info for user ${player}:`, error);
       throw error;
     }
-  }  
+  }
+
 
 
   public static async addScore(player: string, score: string): Promise<void> {
