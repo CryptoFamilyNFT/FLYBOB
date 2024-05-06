@@ -30,10 +30,12 @@ export default class Api {
 
   public static async getScores(): Promise<Score[]> {
     try {
-      const response = await axios.get(`${Api.getBASE_URL(1)}/scores`);
-      console.log("response", response)
-      await Promise.all([response])
-
+      const response = await axios.get(`${Api.getBASE_URL(1)}/scores`, {
+        headers: {
+          'Access-Control-Allow-Origin': '*' // Aggiungi l'header CORS
+        }
+      });
+      console.log("response", response);
       return response.data;
     } catch (error) {
       console.error('Error fetching scores:', error);

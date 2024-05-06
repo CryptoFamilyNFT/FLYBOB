@@ -34,12 +34,17 @@ class ApiConnector {
 
   static async getScores(): Promise<AxiosResponse<Score[]>> {
     try {
-      const response = await axios.get(`${API_URL}/scores`);
+      const response = await axios.get(`${API_URL}/scores`, {
+        headers: {
+          'Access-Control-Allow-Origin': '*' // Imposta l'header CORS
+        }
+      });
       return response;
     } catch (error) {
       throw error;
     }
   }
+
 
   static async addScore(score: Score): Promise<AxiosResponse<Score>> {
     try {
