@@ -2,7 +2,7 @@
 
 import axios, { AxiosResponse } from 'axios';
 
-const API_URL = 'https://bobdb.vercel.app/api'; // Sostituisci con l'URL del tuo server Express
+const API_URL = 'https://bobdb.onrender.com/api'; // Sostituisci con l'URL del tuo server Express
 
 interface Player {
   name: string;
@@ -14,7 +14,7 @@ interface Score {
 }
 
 class ApiConnector {
-  static async getPlayers(): Promise<AxiosResponse<Player[]>> {
+  public static async getPlayers(): Promise<AxiosResponse<Player[]>> {
     try {
       const response = await axios.get(`${API_URL}/players`);
       return response;
@@ -23,7 +23,7 @@ class ApiConnector {
     }
   }
 
-  static async addPlayer(player: Player): Promise<AxiosResponse<Player>> {
+  public static async addPlayer(player: Player): Promise<AxiosResponse<Player>> {
     try {
       const response = await axios.post(`${API_URL}/players`, player);
       return response;
@@ -32,9 +32,9 @@ class ApiConnector {
     }
   }
 
-  static async getScores(): Promise<AxiosResponse<Score[]>> {
+  public static async getScores(): Promise<AxiosResponse<Score[]>> {
     try {
-      const response = await axios.get(`${API_URL}/scores`, {
+      const response = await axios.get(`${API_URL}/scores/`, {
         headers: {
           'Access-Control-Allow-Origin': '*' // Imposta l'header CORS
         }
@@ -46,7 +46,7 @@ class ApiConnector {
   }
 
 
-  static async addScore(score: Score): Promise<AxiosResponse<Score>> {
+  public static async addScore(score: Score): Promise<AxiosResponse<Score>> {
     try {
       const response = await axios.post(`${API_URL}/scores`, score);
       return response;
