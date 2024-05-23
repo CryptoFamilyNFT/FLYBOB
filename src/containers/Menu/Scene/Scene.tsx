@@ -101,10 +101,11 @@ const Scene = () => {
     try {
       // Ottieni i punteggi precedenti del giocatore
       const prevScores = await Api.getScoreByUser(player);
-
+      console.log("prev score", prevScores)
+      const playerScore = prevScores[0]; // Prendi solo il primo punteggio (il più recente)
       if (prevScores && prevScores.length > 0) {
-        const playerScore = prevScores[0]; // Prendi solo il primo punteggio (il più recente)
 
+        console.log("scoreToVerify e playerScore.score", scoreToVerify , playerScore.score)
         if (scoreToVerify > playerScore.score) {
           // Se il nuovo punteggio è maggiore del punteggio precedente, aggiorna il punteggio
           updateScoreUI(scoreToVerify);
@@ -405,6 +406,7 @@ const Scene = () => {
           setStarterValues();
         } else {
           setGameOverModal(false);
+          setFinalScore(score.current);
           setDead(true);
         }
 

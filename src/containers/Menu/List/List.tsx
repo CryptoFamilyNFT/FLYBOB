@@ -146,7 +146,9 @@ const List = () => {
       {isMobile && location.pathname === '/' ? (
         <div className={classes.List} style={{ marginTop: 0 }}>
           <Typography style={{ fontFamily: "Josefin Sans, sans-serif" }} variant="h4">Your Lives: {data && data.lives !== undefined ? data.lives : 'N/A'}</Typography>
-
+          {context.connected && data && data.lives === 0 && data.lastResetTime > 0 && (
+            <GetTimeCountdown />
+          )}
           {context.connected && alive && (
             <Button style={{ color: 'black', background: 'yellow' }} variant='contained'>
               <NavLink to='/game'>Play</NavLink>
